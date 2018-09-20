@@ -5,11 +5,15 @@ import React, { Component } from 'react';
 import { FormControl } from './form-control/forms'
 import { AppDragDropDemo } from './dragdrop'
 import { FormLayout } from './forms/forms-layout';
+import { Toolbar } from './toolbar/toolbar'
+import { AppIcons } from './app-icon'
 
 class App extends Component {
   render() {
     return (
+     
       <div className="page">
+     <AppIcons/>
       <nav className="navbar navbar-dark navbar-expand">
         <a href="#" className="navbar-brand">
           <img src="https://cdn.svc.oneadvanced.com/mosaic/2.0.0/img/logo.svg" alt="Advanced" />
@@ -19,7 +23,6 @@ class App extends Component {
           <ul className="navbar-nav">
             <li className="nav-item">
               <a href="#" className="nav-link">
-               
                 <div>Home</div>
               </a>
             </li>
@@ -66,12 +69,7 @@ class App extends Component {
       </nav>
       <div className="content-container">
         <div className="main-container">
-          <section>
-            <div className="main-inner p-4">                         
-              <FormLayout />
-              {/* <AppDragDropDemo/> */}
-            </div>
-          </section>
+          <FormLayout />
         </div>
       </div>
       <div className="bottom-navigation bg-dark fixed-bottom d-lg-none">

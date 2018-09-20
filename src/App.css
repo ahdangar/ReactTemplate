@@ -33,8 +33,12 @@
 }
 
 .border1{
-  border:1px solid #333;
   min-height:200px;
+  border:1px dashed #333
+}
+
+.border1:hover{
+  border:1px solid #333
 }
 .m-rb1{
   margin:0 5px 10px 0
@@ -42,3 +46,68 @@
 .highLight {
   border:1px solid #ff0000 !important;
 }
+
+ .is-invalid .input-icon{
+  content: '*';
+  position: absolute;
+  right:0px;
+  top:0;
+}
+
+.modifyOption{
+  display: block;
+  position: absolute;
+  top:0px;
+  right:0px;
+  background: #eee;
+  border:1px solid rgb(172, 169, 169)
+}
+
+.form{
+  min-height:150px; 
+  width:100%;
+  display: block;
+  border:1px dashed #999
+}
+.form:hover{
+  border:1px solid #999
+}
+
+.sidebar-container-secondary {
+  width:250px;
+  right:250px;
+}
+.icon-bar .icon {
+  border-radius: 50%;
+  background: #009FDF;
+  padding: 5px;
+  fill: #fff;
+  width: 2rem;
+  height: 2rem;
+}
+
+#editBox{
+  z-index: 999999;
+  position: absolute;
+}
+#editBox input, #editBox label{
+  height:20px;
+  line-height: 20px;
+  font-size: 12px;
+ 
+}
+#editBox label{
+ margin-bottom:5px;
+}
+
+#editBox .card-body{
+  background: #f9f9f9;
+  padding:5px !important;
+}
+
+#editBox .card-header{
+  background: #cccbcb;
+  padding:2px !important;
+}
+
+

@@ -1,157 +1,255 @@
-import React, { Component } from 'react';
-import DraggableCore from 'react-draggable';
+import React from 'react';
+import axios from 'axios'
+import Draggable from 'react-draggable';
 
 export class FormLayout extends React.Component {  
     constructor(props) {
         super(props);
-        this.state = {isToggleOn: true};
+        this.state = { frameSrc:'/snippet/welcome/index.html',doc:null};
         this.insertLayout = this.insertLayout.bind(this)
-        this.handleStop=this.handleStop.bind(this)
-        this.hlSelected=this.hlSelected.bind(this)
-        this.abc=this.abc.bind(this)
-       
-       // this.onDragStart=this.onDragStart.bind(this)
-        this.layout= [
-            {name:'1-col', id:1, codesnap:"<div class='row'><div class='col-12 border1' id='onecol' onclick='abc(this)'></div></div>"},
-            {name:'2-col', id:2, codesnap:"<div class='row'><div class='col-6 border1'></div><div class='col-6 border1'></div></div>"},            
-            {name:'3-col', id:3, codesnap:"<div class='row'><div class='col-4 border1'></div><div class='col-4 border1'></div><div class='col-4 border1'></div></div>"},
-            {name:'4-col', id:4, codesnap:"<div class='row'><div class='col-3 border1' id='onecol'></div><div class='col-3 border1' id='onecol'></div><div class='col-3 border1' id='onecol'></div><div class='col-3 border1' id='onecol'></div></div>"},
-            {name:'6-col', id:5, codesnap:"<div class='row'><div class='col-2 border1'></div><div class='col-2 border1'></div><div class='col-2 border1'></div><div class='col-2 border1'></div><div class='col-2 border1'></div><div class='col-2 border1'></div></div>"},            
-            
-        ]
-        this.formControls=[
-            { id:1, control:'input',codesnap :'<input type="text" class="form-control">'},
-            { id:2, control:'checkbox', codesnap:'<br><input type="checkbox"><label class="control-label"> your option</label></br>'},
-            { id:3, control:'select', codesnap :'<select class="form-control"><option>Dropdown List</option></select>'},
-            { id:4, control:'label', codesnap :'<label class="control-label" >your label</label>'},
-            { id:5, control:'radio', codesnap :'<br><input type="radio"><label class="control-label"> your option</label><br>'}
-        ]
-      }    
-      
-      abc(a){
-          alert(a)
-      }
-      insertLayout(a) {  
-            const isHightlighted=document.getElementsByClassName('highLight')
-            if(isHightlighted.length>0){
-                isHightlighted[0].insertAdjacentHTML('beforeEnd',this.layout[a].codesnap )     
-            } else {
-                document.getElementById('preview').insertAdjacentHTML('beforeEnd',this.layout[a].codesnap ) 
-            }
-            
+        this.highlightlSelected=this.highlightlSelected.bind(this)
+        this.addControlToPreview=this.addControlToPreview.bind(this)
+        this.deleteElement=this.deleteElement.bind(this)
+        this.onFrameLoad = this.onFrameLoad.bind(this)
+        this.closeProperty=this.closeProperty.bind(this)
         
+        this.layout= [
+            {name:'Row', id:1, path:"/snippet/row/index.html"},            
+            {name:'Col', id:2, path:"/snippet/collumn/index.html"},            
+            {name:'Card', id:3, path:"/snippet/card/index.html"},
+            {name:'Form', id:4, path:"/snippet/form/index.html"}            
+        ]
+        this.formControls=[                       
+            { id:2, path:"/snippet/form-controls/checkbox/index.html", control:'Checkbox', controlType:'form'},
+            { id:3, path:"/snippet/form-controls/dropdown/index.html", control:'Select', controlType:'form'},
+            { id:4, path:"/snippet/form-controls/password/index.html", control:'Password', controlType:'form'},
+            { id:5, path:"/snippet/form-controls/radio/index.html", control:'Radio', controlType:'form'},
+            { id:6, path:"/snippet/form-controls/text-area/index.html", control:'Text-area', controlType:'form'},
+            { id:7, path:"/snippet/form-controls/textbox/index.html", control:'Textbox', controlType:'form'},
+            { id:8, path:"/snippet/table/index.html", control:'Table', controlType:'all'}
+        ]
+        this.appShells=[
+            { id:1, path:"/snippet/app-shells/compact-navbar-with-bottom-navigation/html/index.html", control:'Compact-Btm-Nav', controlType:'all'},
+            { id:2, path:"/snippet/app-shells/navbar-with-bottom-navigation/html/index.html", control:'Btm-Nav', controlType:'all'},
+            { id:3, path:"/snippet/app-shells/navbar-with-bottom-navigation-and-secondary-sidebar/html/index.html", control:'btm-side-nav', controlType:'form'}
+        ]
+      } 
+
+      onFrameLoad (e) {        
+          const doc=e.target.contentWindow.document          
+          doc.addEventListener('click',this.highlightlSelected)
+       this.setState({
+        doc
+       }) 
+    }
+
+    insertAppShell(a){        
+        document.getElementById('Myiframe').src=a;    
+    }
+
+    insertLayout(a) {            
+        const isAppShell=this.state.doc.querySelectorAll('#demo-content')
+        const isHightlighted=this.state.doc.querySelectorAll('.highLight')
+        if(isAppShell.length>0){
+            axios
+            .get(process.env.PUBLIC_URL + this.layout[a].path, { responseType: 'text' })
+            .then((response) => {
+              const html = response.data               
+              if(isHightlighted.length>0){
+                isHightlighted[0].insertAdjacentHTML('beforeEnd',html )     
+            } else {  
+                isAppShell[0].innerText=''              
+                isAppShell[0].insertAdjacentHTML('beforeEnd',html)
+                isAppShell[0].classList.add('w-100')
+            } 
+            })
+        }else{
+            alert('Select app shell before adding layout')
+        }
       }
-      insertControl(a) {
-        const isHightlighted=document.getElementsByClassName('highLight')
-        if(isHightlighted.length>0){
-            document.getElementsByClassName('highLight')[0].insertAdjacentHTML('beforeEnd',this.formControls[a].codesnap )
+
+    insertControl(a) {
+        const isHightlighted=this.state.doc.querySelectorAll('.highLight')
+        const temp=a
+        if(isHightlighted.length>0 ){
+            axios
+            .get(process.env.PUBLIC_URL + this.formControls[a].path, { responseType: 'text' })
+            .then((response) => {
+              const html = response.data               
+              this.addControlToPreview(html,temp)
+            })            
+        } else {
+            alert('Please select target object')
+        }        
+     }
+
+     addControlToPreview(html,a){
+        const isHightlighted=this.state.doc.querySelectorAll('.highLight')
+        if(isHightlighted.length>0 && this.formControls[a].controlType==='all'){
+            this.state.doc.querySelectorAll('.highLight')[0].insertAdjacentHTML('beforeEnd',html )        
+        } else if(isHightlighted.length>0 && this.formControls[a].controlType==='form') {
+            if(isHightlighted[0].classList[0]==='form'){
+                this.state.doc.querySelectorAll('.highLight')[0].insertAdjacentHTML('beforeEnd',html )
+            } else {
+                alert("Please insert form before using form controls")
+            }
         } else {
             alert('Please select target object')
         }
-        
      }
 
-     hlSelected(a) {  
-         if(a.target.classList[0]==='control-label'){
-            a.target.innerHTML="<input type='text' id='editLabel' value='"+ a.target.innerText +"'>"
-         }
-         const isDiv=a.target.classList[1]
-         const isHightlighted = document.getElementsByClassName('highLight')
-         if(isDiv === 'border1') {
-            const openLable=document.getElementById('editLabel')
-            if(openLable!=undefined){
-                var newLabel= openLable.value;
-                openLable.parentElement.innerHTML=newLabel
+     deleteElement = (event) => {
+        var element = this.state.doc.querySelectorAll('.highLight')
+        if(element.length>0){
+            element[0].parentNode.removeChild(element[0]);
+        } else{
+            alert('please select elements')
+        }       
+      }    
+
+    editElement = (event) => {        
+        const element = this.state.doc.querySelectorAll('.highLight')
+        const allClass= element[0].classList;
+        document.getElementById('currentClass').value= allClass.value
+        document.getElementById('tagName').value= element[0].tagName         
+    }
+
+    closeProperty(){
+        document.querySelectorAll('#editBox')[0].classList.toggle('d-none')
+    }
    
+    highlightlSelected(a) {       
+        if(a.target.classList[0]==='control-label'){
+            a.target.innerHTML="<input type='text' class='editLabel' value='"+ a.target.innerText +"'>"
+        } else if(a.target.classList[0]==='help-block'){
+             if(this.state.doc.querySelectorAll('.highLight')[0].length>0){
+                this.state.doc.querySelectorAll('.highLight')[0].classList.remove('highLight')
+             }
+            a.target.classList.add('highLight')
+            this.editElement(a)
+        } 
+         const isDiv=a.target.classList[1]  
+         const isForm=a.target.classList[0]      
+         const isHightlighted = this.state.doc.querySelectorAll('.highLight')
+         const openLable=this.state.doc.querySelectorAll('.editLabel')
+         if(isDiv === 'border1' || isForm ==='form') {           
+            if(openLable.length>0){
+                for (let i = 0; i < openLable.length; i++) {         
+                    var newLabel= openLable[i].value;
+                    openLable[i].parentElement.innerHTML=newLabel  
+                   }                
             } else if(a.target.classList[2]==='highLight') {
                 a.target.classList.remove('highLight')
             } else if(isHightlighted.length > 0){              
                     isHightlighted[0].classList.remove('highLight')
                     a.target.classList.add('highLight') 
-             } else {
-                a.target.classList.add('highLight') 
-             }
-            
-         } 
-         
-     }
+                    this.editElement(a)
+            } else {
+                a.target.classList.add('highLight')
+                this.editElement(a)
+            }            
+        }          
+    }  
 
-     handleStop(e) {
-        debugger;
-        console.log(e)
-     }
+    createAppShellButton = () => {
+        let button = []
+        for (let i = 0; i < this.appShells.length; i++) {         
+         button.push(<button key={this.appShells[i].id.toString()} type='button' className='btn btn-light m-rb1' onClick={(e) => this.insertAppShell(this.appShells[i].path)}>{this.appShells[i].control}</button>)         
+        }
+        return button
+      }
 
-     createControlButtons = () => {
+    createControlButtons = () => {
         let button = []
         for (let i = 0; i < this.formControls.length; i++) {         
          button.push(<button key={this.formControls[i].id.toString()} type='button' className='btn btn-light m-rb1' onClick={(e) => this.insertControl(i)}>{this.formControls[i].control}</button>)         
         }
         return button
       }
-      createLayoutButtons = () => {
+
+    createLayoutButtons = () => {
         let Lbutton = []           
         for (let i = 0; i < this.layout.length; i++) {      // (e) => this.insertLayout(i)   
          Lbutton.push(<button key={this.layout[i].id.toString()}  type='button' className='btn btn-light m-rb1' onClick={(e) => this.insertLayout(i)}>{this.layout[i].name}</button>)        
+         
         }
         return Lbutton
       }
-
-    //   abClick() {
-    //     document.getElementById('preview-pan').insertAdjacentHTML('beforeend',
-    //     '<div class="form-group"><label for="exampleInputEmail1">Email address</label><select class="form-control"><option> Select item</option></select></div>')
-    //    }
-       
-    render(){
-       
+    render(){       
         return (
-            <div className='row'>                
-                <div className='col-9' id='preview' onClick={(e) => this.hlSelected(e)}></div> 
-                <div className="sidebar-container-secondary  sidebar-container-secondary-toggle">
-                    <div className="sidebar">
-                        <div className="docs-theming-tabs">
-                        <ul className="nav-fill nav nav-tabs">
-                            <li className="nav-item">
-                                <a className="nav-link"><div>Toolbar</div></a>
-                            </li>
-                            <li className="nav-item">
-                                <a className="active nav-link"><div>Layouts</div></a>
-                            </li>
-                        </ul>
-                        <div className="tab-content">
-                            <div className="tab-pane active">
-                                <div className="p-1">
-                                    <div className=" col-6 mb-4">
-                                        <h5 className="mb-2">Basic Controls</h5>
-                                        <div className="docs-theme-btn-container">
-                                        <small>Layout</small> <br/>
-                                        { this.createLayoutButtons() } <br/>
-                                        <small>Form-controls</small><br/>
-                                        { this.createControlButtons() }  
-                                        </div>
+            <React.Fragment>
+                <div className="jumbotron w-100 jumbotron-fluid bg-white text-dark border-bottom px-2 pb-2 mb-0">           
+                    <div className='ml-auto icon-bar d-lg-flex'>
+                        <a className='d-flex mr-2 align-items-center' role='button' onClick={this.deleteElement}>
+                            <svg className="icon bg-danger" width="20" height="20">
+                                <use xlinkHref="#delete" href="#delete"></use>
+                            </svg> 
+                        </a>
+                        <a className='d-flex mr-2 align-items-center' role='button' onClick={this.closeProperty}>  
+                            <svg className="icon bg-info" width="20" height="20">
+                                <use xlinkHref="#edit_property" href="#edit_property"></use>
+                            </svg> 
+                        </a> 
+                        <a className='d-flex mr-2 align-items-center' role='button' onClick={this.editElement}>  
+                            <svg className="icon bg-dark" width="20" height="20">
+                                <use xlinkHref="#move" href="#move"></use>
+                            </svg> 
+                        </a> 
+                        <a className='d-flex mr-2 align-items-center' role='button' onClick={this.editElement}>  
+                            <svg className="icon" width="20" height="20">
+                                <use xlinkHref="#sort" href="#sort"></use>
+                            </svg> 
+                        </a> 
+                        <Draggable defaultPosition={{x: 0, y: 0}}>
+                        <div id='editBox' className='card w-50'>
+                            <div className='card-header pl-1 pr-1 pt-0 pb-0'>Property<button type="button" onClick={this.closeProperty} className="close" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                            <div className='card-body p-1'>
+                                <div className='row'>
+                                    <div className='col-lg-3 '>
+                                        <label>Classes</label>
+                                        <input className='input-sm w-100' type='text' value='' id='currentClass'/>
+                                    </div>
+                                    <div className='col-lg-3'>
+                                        <label>TagName</label>
+                                        <input className='input-sm w-75'type='text' value='' id='tagName'/>
+                                    </div>
+                                    <div className='col-lg-2'>
+                                        <label>Hide</label><br />
+                                        <input type='checkbox' value='' id='hide'/>
+                                    </div>
+                                    <div className='col-lg-3'>
+                                        <label>Href</label><br />
+                                        <input className='input-sm w-100' type='text' value='' id='tagName2'/>
                                     </div>
                                 </div>
                             </div>
-                            <div className="tab-pane">
-                                <div className="p-3">
-                                    <p>Coming Soon</p>
-                                </div>
+                        </div>
+                        </Draggable>
+                    </div>            
+                </div>  
+                <section>
+                <div className="main-inner p-4">                         
+                    <div className='row'>                                            
+                        <div className='col-lg-9 p-0 order-lg-1 bg-secondary border template-builder-preview' id='preview' onClick={(e) => this.highlightlSelected(e)} onKeyPress={this.handleKeyPress}>
+                            <iframe className='embed-responsive-item d-block ml-auto mr-auto' src={this.state.frameSrc} frameBorder='0'
+                            width='100%' height='800' style={this.state.frameStyle} onLoad={this.onFrameLoad} id='Myiframe'/>
+                            {/* <iframe className='embed-responsive-item d-block ml-auto mr-auto' src={this.state.frameSrc} id='Myiframe' frameBorder='0'
+                            width='100%' height='500'  onLoad={this.onFrameLoad} /> */}
+                        </div>
+                        <div className="sidebar-container-secondary p-1 sidebar-container-secondary-toggle">
+                            <div className="sidebar">
+                                <h5 className='mb-0'>Application Shells</h5><br />
+                                { this.createAppShellButton() }<br/>
+                                <h5 className='mb-0'>Layout</h5> <br/>
+                                { this.createLayoutButtons() } <br />
+                                <h5 className='mb-0'>Form-controls</h5><br/>
+                                { this.createControlButtons() }  <br />                                
                             </div>
                         </div>
-                        </div>
-                        </div>
-                        </div>                            
-                {/* <div className='col-3'>  
-                    <div className='col-12'> 
-                           
                     </div>
-                    <div className='col-12' >                    
-                    <small>Form-control</small> <br/>
-                                                
-                    </div>
-                   
-                </div> */}
-
-            </div>
+                </div>
+            </section>
+            </React.Fragment>
     )
 }
 shouldComponentUpdate() {
