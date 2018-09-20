@@ -1,6 +1,7 @@
 import React from 'react';
 import axios from 'axios'
 import Draggable from 'react-draggable';
+import '../App.css';
 
 export class FormLayout extends React.Component {  
     constructor(props) {
@@ -31,7 +32,7 @@ export class FormLayout extends React.Component {
         this.appShells=[
             { id:1, path:"/snippet/app-shells/compact-navbar-with-bottom-navigation/html/index.html", control:'Compact-Btm-Nav', controlType:'all'},
             { id:2, path:"/snippet/app-shells/navbar-with-bottom-navigation/html/index.html", control:'Btm-Nav', controlType:'all'},
-            { id:3, path:"/snippet/app-shells/navbar-with-bottom-navigation-and-secondary-sidebar/html/index.html", control:'btm-side-nav', controlType:'form'}
+            { id:3, path:"/snippet/app-shells/navbar-with-bottom-navigation-and-secondary-sidebar/html/index.html", control:'Side-nav', controlType:'form'}
         ]
       } 
 
@@ -232,7 +233,7 @@ export class FormLayout extends React.Component {
                     <div className='row'>                                            
                         <div className='col-lg-9 p-0 order-lg-1 bg-secondary border template-builder-preview' id='preview' onClick={(e) => this.highlightlSelected(e)} onKeyPress={this.handleKeyPress}>
                             <iframe className='embed-responsive-item d-block ml-auto mr-auto' src={this.state.frameSrc} frameBorder='0'
-                            width='100%' height='800' style={this.state.frameStyle} onLoad={this.onFrameLoad} id='Myiframe'/>
+                            width='100%' height='800' title='test' style={this.state.frameStyle} onLoad={this.onFrameLoad} id='Myiframe'/>
                             {/* <iframe className='embed-responsive-item d-block ml-auto mr-auto' src={this.state.frameSrc} id='Myiframe' frameBorder='0'
                             width='100%' height='500'  onLoad={this.onFrameLoad} /> */}
                         </div>
