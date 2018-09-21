@@ -1,0 +1,37 @@
+[
+  {
+    "type": "form",
+    "name": "Checkbox",
+    "path": "/public/snippet/controls/checkbox/index.html"
+  },
+  {
+    "type": "form",
+    "name": "Dropdown",
+    "path": "/public/snippet/controls/dropdown/index.html"
+  },
+  {
+    "type": "all",
+    "name": "Password",
+    "path": "/public/snippet/controls/password/index.html"
+  },
+  {
+    "type": "form",
+    "name": "Radio",
+    "path": "/public/snippet/controls/radio/index.html"
+  },
+  {
+    "type": "all",
+    "name": "Table",
+    "path": "/public/snippet/controls/table/index.html"
+  },
+  {
+    "type": "form",
+    "name": "Text area",
+    "path": "/public/snippet/controls/text-area/index.html"
+  },
+  {
+    "type": "form",
+    "name": "Textbox",
+    "path": "/public/snippet/controls/textbox/index.html"
+  }
+]

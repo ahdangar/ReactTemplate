@@ -1,0 +1,37 @@
+[
+  {
+    "type": "applicationShell",
+    "name": "Compact navbar with bottom navigation",
+    "path": "/public/snippet/app-shells/compact-navbar-with-bottom-navigation/html/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Navbar with bottom navigation and secondary sidebar",
+    "path": "/public/snippet/app-shells/navbar-with-bottom-navigation-and-secondary-sidebar/html/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Navbar with bottom navigation",
+    "path": "/public/snippet/app-shells/navbar-with-bottom-navigation/html/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Navbar with collapse and secondary sidebar",
+    "path": "/public/snippet/app-shells/navbar-with-collapse-and-secondary-sidebar/html/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Navbar with collapse",
+    "path": "/public/snippet/app-shells/navbar-with-collapse/html/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Navbar with sidebar and secondary sidebar",
+    "path": "/public/snippet/app-shells/navbar-with-sidebar-and-secondary-sidebar/html/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Navbar with sidebar",
+    "path": "/public/snippet/app-shells/navbar-with-sidebar/html/index.html"
+  }
+]

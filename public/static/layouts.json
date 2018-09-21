@@ -1,0 +1,22 @@
+[
+  {
+    "type": "applicationShell",
+    "name": "Card",
+    "path": "/public/snippet/layouts/card/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Collumn",
+    "path": "/public/snippet/layouts/collumn/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Form",
+    "path": "/public/snippet/layouts/form/index.html"
+  },
+  {
+    "type": "applicationShell",
+    "name": "Row",
+    "path": "/public/snippet/layouts/row/index.html"
+  }
+]

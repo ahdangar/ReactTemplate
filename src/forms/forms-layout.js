@@ -1,42 +1,56 @@
-import React from 'react';
+import React from 'react'
 import axios from 'axios'
-import Draggable from 'react-draggable';
-import '../App.css';
+import Draggable from 'react-draggable'
+import '../App.css'
+// import { read } from 'fs';
 
 export class FormLayout extends React.Component {  
     constructor(props) {
-        super(props);
-        this.state = { frameSrc:'/snippet/welcome/index.html',doc:null};
+        super(props)
         this.insertLayout = this.insertLayout.bind(this)
         this.highlightlSelected=this.highlightlSelected.bind(this)
         this.addControlToPreview=this.addControlToPreview.bind(this)
         this.deleteElement=this.deleteElement.bind(this)
         this.onFrameLoad = this.onFrameLoad.bind(this)
         this.closeProperty=this.closeProperty.bind(this)
-        
-        this.layout= [
-            {name:'Row', id:1, path:"/snippet/row/index.html"},            
-            {name:'Col', id:2, path:"/snippet/collumn/index.html"},            
-            {name:'Card', id:3, path:"/snippet/card/index.html"},
-            {name:'Form', id:4, path:"/snippet/form/index.html"}            
-        ]
-        this.formControls=[                       
-            { id:2, path:"/snippet/form-controls/checkbox/index.html", control:'Checkbox', controlType:'form'},
-            { id:3, path:"/snippet/form-controls/dropdown/index.html", control:'Select', controlType:'form'},
-            { id:4, path:"/snippet/form-controls/password/index.html", control:'Password', controlType:'form'},
-            { id:5, path:"/snippet/form-controls/radio/index.html", control:'Radio', controlType:'form'},
-            { id:6, path:"/snippet/form-controls/text-area/index.html", control:'Text-area', controlType:'form'},
-            { id:7, path:"/snippet/form-controls/textbox/index.html", control:'Textbox', controlType:'form'},
-            { id:8, path:"/snippet/table/index.html", control:'Table', controlType:'all'}
-        ]
-        this.appShells=[
-            { id:1, path:"/snippet/app-shells/compact-navbar-with-bottom-navigation/html/index.html", control:'Compact-Btm-Nav', controlType:'all'},
-            { id:2, path:"/snippet/app-shells/navbar-with-bottom-navigation/html/index.html", control:'Btm-Nav', controlType:'all'},
-            { id:3, path:"/snippet/app-shells/navbar-with-bottom-navigation-and-secondary-sidebar/html/index.html", control:'Side-nav', controlType:'form'}
-        ]
-      } 
+        this.getData=this.getData.bind(this)
+        this.state = {
+            frameSrc:'/snippet/welcome/index.html',
+            doc:null,
+            ready: false,
+            viewData: null,
+            layoutData:null,
+            controlData:null,
+            filteredData: null,
+            query: null
+          }
+      }
+    
+    loadData () {
+        return axios
+          .get('/static/app-shells.json')
+          .then((response) => {
+            return response.data
+          })
+      }  
 
-      onFrameLoad (e) {        
+    loadLayout () {
+        return axios
+          .get('/static/layouts.json')
+          .then((response) => {
+            return response.data
+          })
+      }  
+
+    loadControls () {
+        return axios
+          .get('/static/controls.json')
+          .then((response) => {
+            return response.data
+          })
+      }  
+
+    onFrameLoad (e) {        
           const doc=e.target.contentWindow.document          
           doc.addEventListener('click',this.highlightlSelected)
        this.setState({
@@ -44,22 +58,26 @@ export class FormLayout extends React.Component {
        }) 
     }
 
-    insertAppShell(a){        
-        document.getElementById('Myiframe').src=a;    
+    insertAppShell(a){ 
+        this.setState({
+            frameSrc:a.path.replace('/public','')
+        })      
     }
 
-    insertLayout(a) {            
+    insertLayout(item) {            
         const isAppShell=this.state.doc.querySelectorAll('#demo-content')
         const isHightlighted=this.state.doc.querySelectorAll('.highLight')
         if(isAppShell.length>0){
             axios
-            .get(process.env.PUBLIC_URL + this.layout[a].path, { responseType: 'text' })
+            .get(process.env.PUBLIC_URL + item.path.replace('/public',''), { responseType: 'text' })
             .then((response) => {
               const html = response.data               
               if(isHightlighted.length>0){
                 isHightlighted[0].insertAdjacentHTML('beforeEnd',html )     
             } else {  
-                isAppShell[0].innerText=''              
+                if(isAppShell[0].innerText.indexOf('Page content goes here')!== -1){
+                    isAppShell[0].innerText=''
+                }                
                 isAppShell[0].insertAdjacentHTML('beforeEnd',html)
                 isAppShell[0].classList.add('w-100')
             } 
@@ -69,12 +87,12 @@ export class FormLayout extends React.Component {
         }
       }
 
-    insertControl(a) {
+    insertControl(item) {
         const isHightlighted=this.state.doc.querySelectorAll('.highLight')
-        const temp=a
+        const temp=item
         if(isHightlighted.length>0 ){
             axios
-            .get(process.env.PUBLIC_URL + this.formControls[a].path, { responseType: 'text' })
+            .get(process.env.PUBLIC_URL + item.path.replace('/public',''), { responseType: 'text' })
             .then((response) => {
               const html = response.data               
               this.addControlToPreview(html,temp)
@@ -86,9 +104,9 @@ export class FormLayout extends React.Component {
 
      addControlToPreview(html,a){
         const isHightlighted=this.state.doc.querySelectorAll('.highLight')
-        if(isHightlighted.length>0 && this.formControls[a].controlType==='all'){
+        if(isHightlighted.length>0 && a.type==='all'){
             this.state.doc.querySelectorAll('.highLight')[0].insertAdjacentHTML('beforeEnd',html )        
-        } else if(isHightlighted.length>0 && this.formControls[a].controlType==='form') {
+        } else if(isHightlighted.length>0 && a.type ==='form') {
             if(isHightlighted[0].classList[0]==='form'){
                 this.state.doc.querySelectorAll('.highLight')[0].insertAdjacentHTML('beforeEnd',html )
             } else {
@@ -120,9 +138,7 @@ export class FormLayout extends React.Component {
     }
    
     highlightlSelected(a) {       
-        if(a.target.classList[0]==='control-label'){
-            a.target.innerHTML="<input type='text' class='editLabel' value='"+ a.target.innerText +"'>"
-        } else if(a.target.classList[0]==='help-block'){
+        if(a.target.classList[0]==='help-block'){
              if(this.state.doc.querySelectorAll('.highLight')[0].length>0){
                 this.state.doc.querySelectorAll('.highLight')[0].classList.remove('highLight')
              }
@@ -131,15 +147,9 @@ export class FormLayout extends React.Component {
         } 
          const isDiv=a.target.classList[1]  
          const isForm=a.target.classList[0]      
-         const isHightlighted = this.state.doc.querySelectorAll('.highLight')
-         const openLable=this.state.doc.querySelectorAll('.editLabel')
+         const isHightlighted = this.state.doc.querySelectorAll('.highLight')        
          if(isDiv === 'border1' || isForm ==='form') {           
-            if(openLable.length>0){
-                for (let i = 0; i < openLable.length; i++) {         
-                    var newLabel= openLable[i].value;
-                    openLable[i].parentElement.innerHTML=newLabel  
-                   }                
-            } else if(a.target.classList[2]==='highLight') {
+            if(a.target.classList[2]==='highLight') {
                 a.target.classList.remove('highLight')
             } else if(isHightlighted.length > 0){              
                     isHightlighted[0].classList.remove('highLight')
@@ -176,8 +186,33 @@ export class FormLayout extends React.Component {
         }
         return Lbutton
       }
+    getData () {
+        return this.state.viewData
+      }
+
+    componentDidMount () {
+        this.loadData().then((d) => {          
+          this.setState({
+            viewData:d
+          })
+          this.loadLayout().then((f)=> {
+              this.setState({
+                  layoutData:f
+              })
+            this.loadControls().then((g) => {
+                this.setState({
+                   controlData:g,
+                   ready:true
+                })
+            })
+          })
+         
+        })
+      }
+
     render(){       
-        return (
+        if (this.state.ready) {
+        return (           
             <React.Fragment>
                 <div className="jumbotron w-100 jumbotron-fluid bg-white text-dark border-bottom px-2 pb-2 mb-0">           
                     <div className='ml-auto icon-bar d-lg-flex'>
@@ -234,17 +269,37 @@ export class FormLayout extends React.Component {
                         <div className='col-lg-9 p-0 order-lg-1 bg-secondary border template-builder-preview' id='preview' onClick={(e) => this.highlightlSelected(e)} onKeyPress={this.handleKeyPress}>
                             <iframe className='embed-responsive-item d-block ml-auto mr-auto' src={this.state.frameSrc} frameBorder='0'
                             width='100%' height='800' title='test' style={this.state.frameStyle} onLoad={this.onFrameLoad} id='Myiframe'/>
-                            {/* <iframe className='embed-responsive-item d-block ml-auto mr-auto' src={this.state.frameSrc} id='Myiframe' frameBorder='0'
-                            width='100%' height='500'  onLoad={this.onFrameLoad} /> */}
+                           
                         </div>
                         <div className="sidebar-container-secondary p-1 sidebar-container-secondary-toggle">
                             <div className="sidebar">
                                 <h5 className='mb-0'>Application Shells</h5><br />
-                                { this.createAppShellButton() }<br/>
+                                
+                                {this.getData().map((item, i) => (
+                                    <button key={i} type='button' className='btn btn-light m-rb1' onClick={(e) => this.insertAppShell(item)} title={item.name}>
+                                    <svg className="icon" width="20" height="20">
+                                        <use xlinkHref="#web_design" href="#web_design"></use>
+                                    </svg> 
+                                    </button>
+                                    ))}
                                 <h5 className='mb-0'>Layout</h5> <br/>
-                                { this.createLayoutButtons() } <br />
+                                {this.state.layoutData.map((item, i) => (
+                                    <button key={i} type='button' className='btn btn-light m-rb1' onClick={(e) => this.insertLayout(item)} title={item.name}>
+                                    <svg className="icon" width="20" height="20">
+                                        <use xlinkHref= {'#'+ item.name} href={'#'+item.name}></use>
+                                    </svg> 
+                                    </button>
+                                    ))}
                                 <h5 className='mb-0'>Form-controls</h5><br/>
-                                { this.createControlButtons() }  <br />                                
+                               
+                                                       
+                                     {this.state.controlData.map((item, i) => (
+                                    <button key={i} type='button' className='btn btn-light m-rb1' onClick={(e) => this.insertControl(item)} title={item.name}>
+                                    <svg className="icon" width="20" height="20">
+                                        <use xlinkHref= {'#'+ item.name} href={'#'+item.name}></use>
+                                    </svg> 
+                                    </button>
+                                    ))}
                             </div>
                         </div>
                     </div>
@@ -253,8 +308,12 @@ export class FormLayout extends React.Component {
             </React.Fragment>
     )
 }
+else {
+    return(<div>Loading</div>)
+}
+}
 shouldComponentUpdate() {
-    return false;
+    return true;
    }
   }
 
